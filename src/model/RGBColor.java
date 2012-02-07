@@ -17,6 +17,7 @@ public class RGBColor implements Comparable<RGBColor>, Iterable<Double>
 {
     public static final double COLOR_MIN = -1;
     public static final double COLOR_MAX = 1;
+    
     public static final int JAVA_COLOR_MAX = 255; // should be defined in java.util.Color
 
     private double myRed;

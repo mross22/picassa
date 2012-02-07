@@ -22,7 +22,7 @@ public class NegateExpression extends ParenExpression {
 		
 		@Override
 		public int getNumberOfOperands() {
-			return 2;
+			return 1;
 		}
 
 		@Override

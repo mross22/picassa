@@ -1,5 +1,5 @@
 package model;
-
+import expressions.part2.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import expressions.*;
+import expressions.part2.RandomExpression;
 
 /**
  * Parses a string into an expression tree based on rules for arithmetic.
@@ -33,7 +34,7 @@ public class Parser {
 	// expression begins with a left paren followed by the command name,
 	// which is a sequence of alphabetic characters
 	public final Pattern EXPRESSION_BEGIN_REGEX = Pattern
-			.compile("\\(([a-z]+)");
+			.compile("\\(([a-zA-Z]+)");
 	
 	public final Pattern LET_VARIABLE_REGEX = Pattern.compile("([a-z]+)");
 
@@ -55,6 +56,22 @@ public class Parser {
 		kindsOfExpressions.add(new NumberExpression.Factory());
 		kindsOfExpressions.add(new PlusExpression.Factory());
 		kindsOfExpressions.add(new LetExpression.Factory());
+		kindsOfExpressions.add(new RandomExpression.Factory());
+		kindsOfExpressions.add(new AbsExpression.Factory());
+		kindsOfExpressions.add(new ATanExpression.Factory());
+		kindsOfExpressions.add(new CeilExpression.Factory());
+		kindsOfExpressions.add(new ClampExpression.Factory());
+		kindsOfExpressions.add(new CosExpression.Factory());
+		kindsOfExpressions.add(new FloorExpression.Factory());
+		kindsOfExpressions.add(new LogExpression.Factory());
+		kindsOfExpressions.add(new PerlinBWExpression.Factory());
+		kindsOfExpressions.add(new PerlinColorExpression.Factory());
+		kindsOfExpressions.add(new RandomExpression.Factory());
+		kindsOfExpressions.add(new RgbToYCrCbExpression.Factory());
+		kindsOfExpressions.add(new SinExpression.Factory());
+		kindsOfExpressions.add(new TanExpression.Factory());
+		kindsOfExpressions.add(new WrapExpression.Factory());
+		kindsOfExpressions.add(new YCrCbToRGBExpression.Factory());
 		kindsOfExpressions.add(new LetVariableExpression.Factory());
 		kindsOfExpressions.add(new VariableExpression.Factory());
 	}	
