@@ -1,48 +1,42 @@
 package expressions;
 
+import java.util.List;
+import java.util.Map;
+
 import model.*;
 import model.util.ColorCombinations;
 
+
 public class ExponentExpression extends ParenExpression {
 
-	private Expression myOperand1;
-	private Expression myOperand2;
 
-	public ExponentExpression(Expression operand1, Expression operand2) {
-		myOperand1 = operand1;
-		myOperand2 = operand2;
+	public ExponentExpression(List<Expression> subExpressions,Map<String, Expression> letVariableMap) {
+		super(subExpressions,letVariableMap);
 	}
 	
-	public RGBColor evaluate (double x, double y) {
-		return ColorCombinations.exponent(myOperand1.evaluate(x, y), myOperand2.evaluate(x, y));
+	@Override
+	public RGBColor evaluate(double x, double y) {
+		List<RGBColor> results = evaluateSubexpressions(x,y);
+		return ColorCombinations.exponent(results.get(0), results.get(1));
 	}
 
-	public static class Factory extends ExpressionFactory {
-		public boolean isThisTypeOfExpression() {
-			return isThisTypeParenExpression("exp");
+	public static class Factory extends ParenExpression.Factory {
+		
+		@Override
+		public int getNumberOfOperands() {
+			return 2;
 		}
 
 		@Override
-		public Expression parseExpression() {
-			Expression left = parseNextArgumentExpression();
-			Expression right = parseNextArgumentExpression();
-
-			myParser.skipWhiteSpace();
-			if (myParser.currentCharacter() == ')') {
-				myParser.advanceCurrentPosition(1);
-				return new ExponentExpression(left, right);
-			} else {
-				throw new ParserException(
-						"Expected close paren, instead found "
-								+ myParser.getInput().substring(
-										myParser.getCurrentPosition()));
-			}
-
+		public ParenExpression makeNewParenExpression(List<Expression> subExpressions, Map<String, Expression> letVariableMap) {
+			return new ExponentExpression(subExpressions, letVariableMap);
 		}
+
+		@Override
+		public String commandName() {
+			return "exp";
+		}
+
 	}
-
-
-
-	
 
 }

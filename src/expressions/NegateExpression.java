@@ -1,42 +1,40 @@
 package expressions;
 
 
+import java.util.List;
+import java.util.Map;
+
 import model.*;
 import model.util.ColorCombinations;
 
 public class NegateExpression extends ParenExpression {
 
-	private Expression myOperand;
-
-	public NegateExpression(Expression operand) {
-		myOperand = operand;
+	public NegateExpression(List<Expression> subExpressions,Map<String, Expression> letVariableMap) {
+		super(subExpressions, letVariableMap);
 	}
 
 	public RGBColor evaluate(double x, double y){
-		return ColorCombinations.negate(myOperand.evaluate(x, y));
+		List<RGBColor> results = evaluateSubexpressions(x,y);
+		return ColorCombinations.negate(results.get(0));
 	}
 	
-	public static class Factory extends ExpressionFactory {
+	public static class Factory extends ParenExpression.Factory {
 		
-		public boolean isThisTypeOfExpression() {		
-			return isThisTypeParenExpression("neg");
+		@Override
+		public int getNumberOfOperands() {
+			return 2;
 		}
 
 		@Override
-		public Expression parseExpression() {
-			Expression exp = parseNextArgumentExpression();
-
-			myParser.skipWhiteSpace();
-			if (myParser.currentCharacter() == ')') {
-				myParser.advanceCurrentPosition(1);
-				return new NegateExpression(exp);
-			} else {
-				throw new ParserException(
-						"Expected close paren, instead found "
-								+ myParser.getInput().substring(
-										myParser.getCurrentPosition()));
-			}
+		public ParenExpression makeNewParenExpression(List<Expression> subExpressions, Map<String, Expression> letVariableMap) {
+			return new NegateExpression(subExpressions, letVariableMap);
 		}
+
+		@Override
+		public String commandName() {
+			return "neg";
+		}
+
 	}
 
 }

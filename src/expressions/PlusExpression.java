@@ -1,52 +1,42 @@
 package expressions;
 
+import java.util.List;
+import java.util.Map;
+
 import model.*;
 import model.util.ColorCombinations;
 
 
 public class PlusExpression extends ParenExpression {
 
-	Expression myOperand1;
-	Expression myOperand2;
 
-	public PlusExpression(Expression operand1, Expression operand2) {
-		myOperand1 = operand1;
-		myOperand2 = operand2;
+	public PlusExpression(List<Expression> subExpressions, Map<String, Expression> letVariableMap) {
+		super(subExpressions, letVariableMap);
 	}
 	
 	@Override
 	public RGBColor evaluate(double x, double y) {
-		return ColorCombinations.add(myOperand1.evaluate(x,y), myOperand2.evaluate(x,y));
+		List<RGBColor> results = evaluateSubexpressions(x,y);
+		return ColorCombinations.add(results.get(0), results.get(1));
 	}
 
-	public static class Factory extends ExpressionFactory {
-
-		@Override
-		public boolean isThisTypeOfExpression() {
-			return isThisTypeParenExpression("plus");
-		}
-
-		@Override
-		public Expression parseExpression() {
+	public static class Factory extends ParenExpression.Factory {
 		
-			Expression left = parseNextArgumentExpression();
-			Expression right = parseNextArgumentExpression();
+		@Override
+		public int getNumberOfOperands() {
+			return 2;
+		}
 
-			myParser.skipWhiteSpace();
-			if (myParser.currentCharacter() == ')') {
-				myParser.advanceCurrentPosition(1);
-				return new PlusExpression(left, right);
-			} else {
-				throw new ParserException(
-						"Expected close paren, instead found "
-								+ myParser.getInput().substring(
-										myParser.getCurrentPosition()));
-			}
+		@Override
+		public ParenExpression makeNewParenExpression(List<Expression> subExpressions, Map<String, Expression> letVariableMap) {
+			return new PlusExpression(subExpressions, letVariableMap);
+		}
 
+		@Override
+		public String commandName() {
+			return "plus";
 		}
 
 	}
-
-	
 
 }

@@ -1,5 +1,6 @@
 package expressions;
 
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,33 +20,31 @@ public class NumberExpression extends Expression {
 		myValue = rgb;
 	}
 
-	public RGBColor evaluate(double x, double y){
+	public RGBColor evaluate(double x, double y) {
 		return myValue;
 	}
 
-
-	public static class Factory extends ExpressionFactory {
+	public static class Factory extends Expression.Factory {
 		public boolean isThisTypeOfExpression() {
+
 			myParser.skipWhiteSpace();
-			String temp = myParser.getInput().substring(myParser.getCurrentPosition());
-			Matcher doubleMatcher = DOUBLE_REGEX.matcher(temp);
-			return doubleMatcher.lookingAt();
+			String temp = myParser.getInput().substring(
+					myParser.getCurrentPosition());
+			return regexMatches(DOUBLE_REGEX, temp);
 		}
 
-		public Expression parseExpression() {
+		public Expression parseExpression(Map<String, Expression> argMap) {
 			myParser.skipWhiteSpace();
-			Matcher doubleMatcher = DOUBLE_REGEX.matcher(myParser
-					.getInput());
+			Matcher doubleMatcher = DOUBLE_REGEX.matcher(myParser.getInput());
 			doubleMatcher.find(myParser.getCurrentPosition());
 			String numberMatch = myParser.getInput().substring(
 					doubleMatcher.start(), doubleMatcher.end());
 			myParser.setMyCurrentPosition(doubleMatcher.end());
 			double value = Double.parseDouble(numberMatch);
 			RGBColor gray = new RGBColor(value);
-			return new NumberExpression(gray);			
+			return new NumberExpression(gray);
 		}
-	}
 
-	
+	}
 
 }

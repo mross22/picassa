@@ -1,49 +1,40 @@
 package expressions;
 
 
-import model.*;
+import java.util.List;
+import java.util.Map;
+
+import model.RGBColor;
 import model.util.ColorCombinations;
 
 public class ColorExpression extends ParenExpression {
 
-	private Expression myOperand1;
-	private Expression myOperand2;
-	private Expression myOperand3;
-
-	public ColorExpression(Expression operand1, Expression operand2,
-			Expression operand3) {
-		myOperand1 = operand1;
-		myOperand2 = operand2;
-		myOperand3 = operand3;
+	
+	public ColorExpression(List<Expression> subExpressions, Map<String, Expression> letVariableMap) {
+		super(subExpressions, letVariableMap);
 	}
 	
 	public RGBColor evaluate(double x, double y){
-		return ColorCombinations.color(myOperand1.evaluate(x, y), myOperand2.evaluate(x, y), myOperand3.evaluate(x, y));
+		List<RGBColor> results = evaluateSubexpressions(x,y);
+		return ColorCombinations.color(results.get(0), results.get(1), results.get(2));
 	}
 
-	public static class Factory extends ExpressionFactory {
+	public static class Factory extends ParenExpression.Factory {
 		@Override
-		public boolean isThisTypeOfExpression() {
-			return isThisTypeParenExpression("color");
+		public int getNumberOfOperands() {
+			return 3;
 		}
 
 		@Override
-		public Expression parseExpression() {
-			Expression left = parseNextArgumentExpression();
-			Expression center = parseNextArgumentExpression();
-			Expression right = parseNextArgumentExpression();
-
-			myParser.skipWhiteSpace();
-			if (myParser.currentCharacter() == ')') {
-				myParser.advanceCurrentPosition(1);
-				return new ColorExpression(left, center, right);
-			} else {
-				throw new ParserException(
-						"Expected close paren, instead found "
-								+ myParser.getInput().substring(
-										myParser.getCurrentPosition()));
-			}
+		public ParenExpression makeNewParenExpression(List<Expression> subExpressions, Map<String, Expression> letVariableMap) {
+			return new ColorExpression(subExpressions, letVariableMap);
 		}
+
+		@Override
+		public String commandName() {
+			return "color";
+		}
+
 	}
 
 }

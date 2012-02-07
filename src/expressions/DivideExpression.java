@@ -1,47 +1,38 @@
 package expressions;
 
+import java.util.List;
+import java.util.Map;
+
 import model.*;
 import model.util.ColorCombinations;
 
 public class DivideExpression extends ParenExpression {
 
-	Expression myOperand1;
-	Expression myOperand2;
-
-	public DivideExpression(Expression operand1, Expression operand2) {
-		myOperand1 = operand1;
-		myOperand2 = operand2;
+	public DivideExpression(List<Expression> subExpressions, Map<String, Expression> letVariableMap) {
+		super(subExpressions, letVariableMap);
 	}
 
 	public RGBColor evaluate(double x, double y) {
-		return ColorCombinations.divide(myOperand1.evaluate(x, y), myOperand2
-				.evaluate(x, y));
+		List<RGBColor> results = evaluateSubexpressions(x,y);
+		return ColorCombinations.divide(results.get(0), results.get(1));
 	}
 
-	public static class Factory extends ExpressionFactory {
+	public static class Factory extends ParenExpression.Factory {
 
 		@Override
-		public boolean isThisTypeOfExpression() {
-			return isThisTypeParenExpression("div");
+		protected String commandName() {
+			return "div";
 		}
 
 		@Override
-		public Expression parseExpression() {
-			Expression left = parseNextArgumentExpression();
-			Expression right = parseNextArgumentExpression();
-
-			myParser.skipWhiteSpace();
-			if (myParser.currentCharacter() == ')') {
-				myParser.advanceCurrentPosition(1);
-				return new DivideExpression(left, right);
-			} else {
-				throw new ParserException(
-						"Expected close paren, instead found "
-								+ myParser.getInput().substring(
-										myParser.getCurrentPosition()));
-			}
+		protected int getNumberOfOperands() {
+			return 2;
 		}
 
+		@Override
+		protected ParenExpression makeNewParenExpression(
+				List<Expression> subExpressions, Map<String, Expression> letVariableMap) {
+			return new DivideExpression(subExpressions,letVariableMap);
+		}
 	}
-
 }

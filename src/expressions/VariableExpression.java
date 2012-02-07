@@ -1,5 +1,7 @@
 package expressions;
 
+import java.util.Map;
+
 import model.*;
 
 public class VariableExpression extends Expression {
@@ -19,7 +21,7 @@ public class VariableExpression extends Expression {
 			return null;
 	}
 	
-	public static class Factory extends ExpressionFactory {
+	public static class Factory extends Expression.Factory {
 		@Override
 		public boolean isThisTypeOfExpression() {
 				myParser.skipWhiteSpace();
@@ -29,7 +31,7 @@ public class VariableExpression extends Expression {
 		}
 
 		@Override
-		public Expression parseExpression() {
+		public Expression parseExpression(Map<String, Expression> argMap) {
 			
 			if(myParser.getInput().substring(myParser.getCurrentPosition(), myParser.getCurrentPosition()+1).equals("x")){
 				myParser.advanceCurrentPosition(1);

@@ -1,7 +1,9 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import expressions.*;
@@ -32,8 +34,10 @@ public class Parser {
 	// which is a sequence of alphabetic characters
 	public final Pattern EXPRESSION_BEGIN_REGEX = Pattern
 			.compile("\\(([a-z]+)");
+	
+	public final Pattern LET_VARIABLE_REGEX = Pattern.compile("([a-z]+)");
 
-	public List<ExpressionFactory> kindsOfExpressions = new ArrayList<ExpressionFactory>();
+	public List<Expression.Factory> kindsOfExpressions = new ArrayList<Expression.Factory>();
 
 	// state of the parser
 	private int myCurrentPosition;
@@ -50,6 +54,8 @@ public class Parser {
 		kindsOfExpressions.add(new NegateExpression.Factory());
 		kindsOfExpressions.add(new NumberExpression.Factory());
 		kindsOfExpressions.add(new PlusExpression.Factory());
+		kindsOfExpressions.add(new LetExpression.Factory());
+		kindsOfExpressions.add(new LetVariableExpression.Factory());
 		kindsOfExpressions.add(new VariableExpression.Factory());
 	}	
 
@@ -63,7 +69,7 @@ public class Parser {
 	public Expression makeExpression(String input) {
 		myInput = input;
 		myCurrentPosition = 0; // NEW LINE
-		Expression result = parseExpression();
+		Expression result = parseExpression(new HashMap<String, Expression>());
 		skipWhiteSpace();
 		if (notAtEndOfString()) {
 			throw new ParserException(
@@ -74,10 +80,10 @@ public class Parser {
 		return result;
 	}
 
-	private Expression parseExpression() {
-		for (ExpressionFactory expressionKind : kindsOfExpressions) {
+	public Expression parseExpression(Map<String, Expression> argMap) {
+		for (Expression.Factory expressionKind : kindsOfExpressions) {
 			if (expressionKind.isThisTypeOfExpression())
-				return expressionKind.parseExpression();
+				return expressionKind.parseExpression(argMap);
 		}
 		throw new ParserException("Unexpected expression type", ParserException.Type.UNKNOWN_COMMAND);
 	}
