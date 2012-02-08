@@ -29,15 +29,14 @@ public class LetVariableExpression extends Expression {
 
 	public static class Factory extends Expression.Factory {
 
-		@Override
-		public boolean isThisTypeOfExpression() {
+		public String getLetVariable(){
 			int next = 0;
 			int nextParen = myParser.getInput().indexOf(')',
 					myParser.getCurrentPosition());
 			int nextSpace = myParser.getInput().indexOf(' ',
 					myParser.getCurrentPosition());
 			if (nextParen < 0 && nextSpace < 0)
-				return false;
+				return null;
 			else if (nextParen > 0 && nextSpace > 0) {
 				next = nextParen < nextSpace ? nextParen : nextSpace;
 			} else if (nextParen < 0)
@@ -49,35 +48,26 @@ public class LetVariableExpression extends Expression {
 					myParser.getCurrentPosition(), next);
 			if(variable.length() == 1){
 				if(variable.charAt(0) == 'x' || variable.charAt(0) == 'y'){
-					return false;
+					return null;
 				}
 			}
 			for (char c : variable.toCharArray()) {
 				if (!Character.isLetter(c))
-					return false;
+					return null;
 			}
-			return true;
-
+			return variable;
+			
+		}
+		
+		@Override
+		public boolean isThisTypeOfExpression() {
+			return (getLetVariable() != null);
 		}
 
 		@Override
 		public Expression parseExpression(Map<String, Expression> argMap) {
-			int next = 0;
-			int nextParen = myParser.getInput().indexOf(')',
-					myParser.getCurrentPosition());
-			int nextSpace = myParser.getInput().indexOf(' ',
-					myParser.getCurrentPosition());
 
-			if (nextParen > 0 && nextSpace > 0) {
-				next = nextParen < nextSpace ? nextParen : nextSpace;
-			} else if (nextParen < 0)
-				next = nextSpace;
-			else if (nextSpace < 0){
-				next = nextParen;
-			}
-
-			String variable = myParser.getInput().substring(
-					myParser.getCurrentPosition(), next);
+			String variable = getLetVariable();
 			myParser.advanceCurrentPosition(variable.length());
 			return new LetVariableExpression(variable, argMap);
 		}
